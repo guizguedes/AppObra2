@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="utf-8"/>
+    <title>Sistema Obra</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        h3 {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        td {
+            vertical-align: middle;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            text-decoration: none;
+            background-color: #dc3545; /* Cor vermelha para botão "Deletar" */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 5px; /* Espaçamento à direita para separar dos outros elementos */
+        }
+
+        .btn:hover {
+            opacity: 0.8;
+        }
+
+        #valorGeral {
+            font-weight: bold;
+        }
+
+        tfoot {
+            font-weight: bold;
+        }
+    </style>
+    <script>
+        function calcularValorTotal() {
+            const rows = document.querySelectorAll("#TabelaProdutos tbody tr");
+            let valorGeral = 0;
+
+            rows.forEach(row => {
+                const maoDeObra = parseFloat(row.querySelector(".mao-de-obra").textContent) || 0;
+                const valorMaterial = parseFloat(row.querySelector(".valor-material").textContent) || 0;
+                const valorTotal = maoDeObra + valorMaterial;
+                row.querySelector(".valor-total").textContent = valorTotal.toFixed(2);
+                valorGeral += valorTotal;
+            });
+
+            document.querySelector("#valorGeral").textContent = valorGeral.toFixed(2);
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            calcularValorTotal();
+        });
+    </script>
+</head>
+<body>
+<h3><a href="/CadastrarObra">Cadastrar Obra</a></h3>
+<div class="container">
+    <table id="TabelaProdutos" class="table table-striped">
+        <thead>
+        <tr>
+            <th>Codigo</th>
+            <th>Nome</th>
+            <th>Cargo</th>
+            <th>Mão De Obra</th>
+            <th>Material</th>
+            <th>Valor</th>
+            <th>Total</th>
+            <th>Excluir</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="Obra : ${Obra}">
+            <td th:text="${Obra.Codigo}"></td>
+            <td th:text="${Obra.NomeDoProfissional}"></td>
+            <td th:text="${Obra.CargoDoProfissional}"></td>
+            <td class="mao-de-obra" th:text="${Obra.MaoDeObra}"></td>
+            <td th:text="${Obra.NomeDoMaterial}"></td>
+            <td class="valor-material" th:text="${Obra.ValorDoMaterial}"></td>
+            <td class="valor-total"></td>
+            <td>
+                <form th:action="@{/ListaObra/{Codigo}(Codigo=${Obra.Codigo})}" method="post">
+                    <input type="hidden" name="_method" value="delete"/>
+                    <button type="submit" id="deleteButton" class="btn"><i class="bi bi-trash"></i> Deletar</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr>
+            <td colspan="6"></td>
+            <td><strong>Valor Geral</strong></td>
+            <td id="valorGeral"></td>
+        </tr>
+        </tfoot>
+    </table>
+</div>
+</body>
+</html>
